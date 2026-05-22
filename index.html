@@ -384,21 +384,21 @@ body {
 <body>
 
 <div class="topbar">
-  <h1>⚗ Proyecto de Química</h1>
-  <p class="sub">Diego Chávez · Control: 25041014</p>
+  <h1>Proyecto de Química</h1>
+  <p class="sub">Diego Chávez · N.Control: 25041014</p>
 </div>
 
 <div class="tab-bar" id="tabBar">
-  <button class="tab-btn active" onclick="switchTab('en', this)">⚡ Combinaciones</button>
-  <button class="tab-btn tab-vl" onclick="switchTab('vl', this)">🔗 Valencia Opuesta</button>
-  <button class="tab-btn" onclick="switchTab('rx', this)">🔋 Redox</button>
+  <button class="tab-btn active" onclick="switchTab('en', this)">Combinaciones</button>
+  <button class="tab-btn tab-vl" onclick="switchTab('vl', this)">Valencia Opuesta</button>
+  <button class="tab-btn" onclick="switchTab('rx', this)">Operaciones Redox</button>
 </div>
 <div class="tab-divider"></div>
 
 
 <div class="tab-panel active" id="tab-en">
   <p class="tab-intro">
-    Haz clic en cualquier elemento activo. Los compatibles se iluminarán según su capacidad de combinación por electronegatividad.
+    Pulse en cualquier elemento, los compatibles se iluminarán si son concordantes para una combinación por electronegatividad.
   </p>
   <div class="legend">
     <span class="leg-item"><span class="leg-dot" style="background:#7dc4ff"></span>Metal alc./alcalinotérreo</span>
@@ -409,22 +409,22 @@ body {
   </div>
   <div class="scroll-hint-banner">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    <span>Desliza →</span> para ver toda la tabla periódica
+    <span>Deslize hacia la derecha</span> para ver toda la tabla periódica
   </div>
   <div class="pt-grid-wrapper"><div class="pt-grid" id="grid-en"></div></div>
-  <div id="res-en"><div class="placeholder">🔬 Selecciona un elemento para iniciar el análisis de combinaciones</div></div>
-  <button class="btn-reset" onclick="resetTab('en')">↺ Nueva selección</button>
+  <div id="res-en"><div class="placeholder">Seleccione un elemento para iniciar las combinaciones</div></div>
+  <button class="btn-reset" onclick="resetTab('en')">Limpiar</button>
 </div>
 
 
 <div class="tab-panel" id="tab-vl">
   <p class="tab-intro">
-    Selecciona un elemento. El sistema identificará los de signo de valencia opuesto (catión ↔ anión) para formar compuestos binarios estables.
+    Selecciona un elemento y se identificará los de signo de valencia opuesto (catión ↔ anión) para formar compuestos binarios estables
   </p>
   <div class="vl-indicators">
-    <span class="vl-pill pos">⊕ Valencia positiva → Cationes</span>
+    <span class="vl-pill pos">⊕Valencia positiva → Cationes</span>
     <span class="vl-pill neg">⊖ Valencia negativa → Aniones</span>
-    <span class="vl-pill unk">○ Nula → No reactivo</span>
+    <span class="vl-pill unk">○ Nula → No es reactivo</span>
   </div>
   <div class="legend">
     <span class="leg-item"><span class="leg-dot" style="background:#7dc4ff"></span>Metal alc./alcalinotérreo</span>
@@ -435,24 +435,24 @@ body {
   </div>
   <div class="scroll-hint-banner">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    <span>Desliza →</span> para ver toda la tabla periódica
+    <span>Deslize hacia la derecha →</span> para ver toda la tabla periódica
   </div>
   <div class="pt-grid-wrapper"><div class="pt-grid" id="grid-vl"></div></div>
-  <div id="res-vl"><div class="placeholder">🔗 Selecciona un elemento para identificar sus posibles uniones por valencia opuesta</div></div>
-  <button class="btn-reset-vl" onclick="resetTab('vl')">↺ Nueva selección</button>
+  <div id="res-vl"><div class="placeholder">Seleccione un elemento para identificar las uniones por valencia opuesta</div></div>
+  <button class="btn-reset-vl" onclick="resetTab('vl')">Limpiar</button>
 </div>
 
 
 <div class="tab-panel" id="tab-rx">
   <p class="tab-intro">
-    Selecciona un elemento con potencial de reducción estándar conocido (E°). Los compatibles para una celda galvánica espontánea se iluminarán.
+    Seleccione un elemento con potencial de reducción estándar conocido (E°). Los compatibles para una celda galvánica espontánea se iluminarán.
   </p>
   <div class="scroll-hint-banner">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     <span>Desliza →</span> para ver toda la tabla periódica
   </div>
   <div class="pt-grid-wrapper"><div class="pt-grid" id="grid-rx"></div></div>
-  <div id="res-rx"><div class="placeholder">🔋 Selecciona un elemento para analizar su comportamiento redox y celda galvánica</div></div>
+  <div id="res-rx"><div class="placeholder">Seleccione un elemento para analizar su comportamiento redox</div></div>
   <button class="btn-reset" onclick="resetTab('rx')">↺ Nueva selección</button>
 </div>
 

@@ -31,7 +31,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ══════════════ TOP BAR ══════════════ */
+
 .topbar {
   text-align: center;
   padding: 28px 20px 0;
@@ -46,7 +46,8 @@ body {
 }
 .topbar .sub { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
 
-/* ══════════════ TAB BAR ══════════════ */
+
+
 .tab-bar {
   display: flex;
   justify-content: center;
@@ -84,11 +85,11 @@ body {
 .tab-btn.tab-vl.active { border-bottom-color: var(--purple); }
 .tab-btn:not(.active):hover { color: var(--text); background: #202028; }
 
-/* ══════════════ PANELS ══════════════ */
+
 .tab-panel { display: none; padding: 20px 14px 60px; max-width: 1100px; margin: 0 auto; }
 .tab-panel.active { display: block; }
 
-/* ══════════════ PERIODIC TABLE ══════════════ */
+
 .pt-grid-wrapper {
   overflow-x: auto;
   padding-bottom: 10px;
@@ -142,7 +143,7 @@ body {
 .el.LA .sym { color: #f9a8d4; }
 .el.AC .sym { color: #fb923c; }
 
-/* ══════════════ RESULT PANEL ══════════════ */
+
 #res-en, #res-rx, #res-vl {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -159,7 +160,9 @@ body {
   line-height: 1.6;
 }
 
-/* ══════════════ BADGES & FORMULAS ══════════════ */
+
+
+
 .badge { display: inline-block; background: rgba(255,45,68,0.1); border: 1px solid rgba(255,45,68,0.3); color: var(--red); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 12px; }
 .badge-vl { display: inline-block; background: rgba(176,106,255,0.12); border: 1px solid rgba(176,106,255,0.35); color: var(--purple); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 12px; }
 
@@ -172,7 +175,7 @@ body {
 .iupac-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
 .iupac-box { display: inline-block; font-family: 'Space Mono', monospace; color: var(--cyan); background: rgba(0,229,192,0.07); border: 1px solid rgba(0,229,192,0.2); padding: 7px 14px; border-radius: 8px; margin-bottom: 16px; font-size: clamp(0.72rem,2vw,0.9rem); word-break: break-all; }
 
-/* ══════════════ CARDS ══════════════ */
+
 .card-exp { background: var(--surface2); border: 1px solid var(--border); border-left: 4px solid var(--cyan); border-radius: 12px; overflow: hidden; margin-top: 18px; }
 .card-exp-vl { background: var(--surface2); border: 1px solid var(--border); border-left: 4px solid var(--purple); border-radius: 12px; overflow: hidden; margin-top: 18px; }
 .bloque { padding: 16px 18px; border-top: 1px solid var(--border); }
@@ -187,12 +190,13 @@ body {
 .fm-vl { font-family: 'Space Mono', monospace; color: var(--purple); font-size: .8rem; word-break: break-all; }
 .info-ai { color: var(--text); }
 
-/* ══════════════ DATA CHIPS ══════════════ */
+
+
 .data-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
 .data-chip { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 9px; font-size: 10.5px; color: var(--muted); font-family: 'Space Mono', monospace; white-space: nowrap; }
 .data-chip span { color: var(--text); font-weight: 700; }
 
-/* ══════════════ LOADING / ERROR ══════════════ */
+
 .ai-loading { display: flex; align-items: center; gap: 10px; padding: 14px 0; color: var(--muted); font-size: 0.86rem; }
 .ai-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--cyan); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
 .ai-spinner-vl { border-top-color: var(--purple); }
@@ -201,44 +205,44 @@ body {
 .err-msg { display: flex; align-items: flex-start; gap: 10px; background: rgba(255,45,68,0.07); border: 1px solid rgba(255,45,68,0.25); border-radius: 10px; padding: 12px 16px; color: #ff8095; font-size: 0.83rem; line-height: 1.6; }
 .err-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
 
-/* ══════════════ BUTTONS ══════════════ */
+
 .btn-reset { display: block; margin: 20px auto 0; padding: 12px 28px; background: var(--cyan); color: #000; border: none; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; transition: background .2s, transform .1s; }
 .btn-reset:hover { background: #00ccaa; transform: translateY(-1px); }
 .btn-reset-vl { display: block; margin: 20px auto 0; padding: 12px 28px; background: var(--purple); color: #fff; border: none; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; transition: background .2s, transform .1s; }
 .btn-reset-vl:hover { background: #9a55ee; transform: translateY(-1px); }
 
-/* ══════════════ VL INDICATORS ══════════════ */
+
+
 .vl-indicators { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
 .vl-pill { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 700; }
 .vl-pill.pos { background: rgba(61,143,255,0.15); border: 1px solid rgba(61,143,255,0.4); color: #7ab8ff; }
 .vl-pill.neg { background: rgba(255,140,105,0.15); border: 1px solid rgba(255,140,105,0.4); color: #ff8c69; }
 .vl-pill.unk { background: rgba(90,90,114,0.15); border: 1px solid rgba(90,90,114,0.4); color: var(--muted); }
 
-/* ══════════════ ENLACE TAG ══════════════ */
+
 .enlace-tag { display: inline-block; padding: 4px 13px; border-radius: 6px; font-weight: 700; font-size: 12.5px; margin: 5px 0 12px; }
 .enlace-ionic { background: rgba(255,45,68,0.12); border: 1px solid rgba(255,45,68,0.3); color: var(--red); }
 .enlace-cov { background: rgba(0,229,192,0.1); border: 1px solid rgba(0,229,192,0.25); color: var(--cyan); }
 .enlace-polar { background: rgba(255,209,102,0.12); border: 1px solid rgba(255,209,102,0.3); color: var(--gold); }
 
-/* ══════════════ LEGEND ══════════════ */
+
 .legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 14px; }
 .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
 .leg-dot { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
 
-/* ══════════════ MISC ══════════════ */
+
 .pt-sep { grid-column: 1 / -1; height: 8px; }
 .la-label { color: var(--muted); font-size: 10px; padding: 4px 6px; align-self: center; text-align: right; }
 
-/* ══════════════════════════════════════
-   MOBILE RESPONSIVE  ≤ 700 px
-══════════════════════════════════════ */
+
+
 @media (max-width: 700px) {
 
   /* Top */
   .topbar { padding: 18px 12px 0; }
   .topbar .sub { font-size: 0.78rem; }
 
-  /* Tab bar — scrollable row on very small screens */
+
   .tab-bar {
     gap: 4px;
     padding: 10px 8px 0;
@@ -255,10 +259,10 @@ body {
     border-radius: 10px 10px 0 0;
   }
 
-  /* Panel */
+
   .tab-panel { padding: 14px 10px 50px; }
 
-  /* Periodic table hint */
+
   .scroll-hint {
     display: flex !important;
     align-items: center;
@@ -269,40 +273,40 @@ body {
   }
   .scroll-hint svg { flex-shrink: 0; opacity: .6; }
 
-  /* Smaller element cards on mobile */
+
   .pt-grid { grid-template-columns: repeat(18, minmax(36px, 1fr)); gap: 2px; min-width: 660px; }
   .el { height: 44px; border-radius: 4px; }
   .el .sym { font-size: 11px; }
   .el .nm  { font-size: 6px; }
   .el .vl  { display: none; }
 
-  /* Results */
+
   #res-en, #res-rx, #res-vl { padding: 16px 14px; border-radius: 12px; }
 
-  /* Formulas */
+
   .formula-big, .formula-big-vl { font-size: 1.7rem; letter-spacing: 1px; }
   .nombre-comp { font-size: 1.05rem; }
   .delta-e { font-size: 1.4rem; }
   .ecua { font-size: 0.7rem; }
   .iupac-box { font-size: 0.7rem; padding: 6px 10px; }
 
-  /* Cards */
+
   .bloque { padding: 14px 14px; }
   .bp { font-size: .82rem; }
   .btitulo, .btitulo-vl { font-size: 9px; }
 
-  /* Data chips — smaller */
+
   .data-chip { font-size: 9.5px; padding: 3px 8px; }
 
-  /* Legend wraps nicely */
+
   .legend { gap: 6px; }
   .leg-item { font-size: 10px; }
 
-  /* VL pills stack */
+
   .vl-indicators { gap: 6px; }
   .vl-pill { font-size: 10.5px; padding: 5px 10px; }
 
-  /* Buttons full width on mobile */
+
   .btn-reset, .btn-reset-vl {
     width: 100%;
     max-width: 320px;
@@ -310,9 +314,9 @@ body {
   }
 }
 
-/* ══════════════════════════════════════
-   EXTRA SMALL  ≤ 400 px
-══════════════════════════════════════ */
+
+
+
 @media (max-width: 400px) {
   .pt-grid { grid-template-columns: repeat(18, minmax(30px, 1fr)); gap: 1px; min-width: 548px; }
   .el { height: 38px; }
@@ -335,7 +339,7 @@ body {
   <button class="tab-btn" onclick="switchTab('rx', this)">🔋 Operaciones Redox</button>
 </div>
 
-<!-- ═══════════ TAB 1 ═══════════ -->
+
 <div class="tab-panel active" id="tab-en">
   <p style="text-align:center;color:var(--muted);font-size:.84rem;margin-bottom:10px;line-height:1.5">
     Haz clic en cualquier elemento activo. Los compatibles se iluminarán según su capacidad de combinación por electronegatividad.
@@ -356,7 +360,7 @@ body {
   <button class="btn-reset" onclick="resetTab('en')">↺ Nueva selección</button>
 </div>
 
-<!-- ═══════════ TAB 2 ═══════════ -->
+
 <div class="tab-panel" id="tab-vl">
   <p style="text-align:center;color:var(--muted);font-size:.84rem;margin-bottom:6px;line-height:1.5">
     Selecciona un elemento. El sistema identificará automáticamente los de signo de valencia opuesto (catión ↔ anión) para formar compuestos binarios estables.
@@ -382,7 +386,7 @@ body {
   <button class="btn-reset-vl" onclick="resetTab('vl')">↺ Nueva selección</button>
 </div>
 
-<!-- ═══════════ TAB 3 ═══════════ -->
+
 <div class="tab-panel" id="tab-rx">
   <p style="text-align:center;color:var(--muted);font-size:.84rem;margin-bottom:14px;line-height:1.5">
     Selecciona un elemento con potencial de reducción estándar conocido (E°). Los compatibles para una celda galvánica espontánea se iluminarán a continuación.
@@ -529,7 +533,7 @@ const NOMBRES_ANION = {
 const mcd = (x,y) => y===0?x:mcd(y,x%y);
 const sup = v => String(v).split('').map(c=>({'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'}[c]||c)).join('');
 
-// Show scroll hint on mobile
+
 function showScrollHint(panel) {
   if (window.innerWidth <= 700) {
     const hint = panel.querySelector('.scroll-hint');
@@ -537,7 +541,7 @@ function showScrollHint(panel) {
   }
 }
 
-// ════ GRID BUILDER ════
+
 function buildGrid(tabId) {
   const container = document.getElementById(`grid-${tabId}`);
   container.innerHTML = '';
@@ -636,7 +640,7 @@ function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// ════ TAB EN ════
+
 let selEN = [];
 function clickEN(el) {
   if (selEN.length >= 2) return;
@@ -748,7 +752,7 @@ Máximo 4 líneas por sección. Lenguaje técnico-académico conciso.`;
   }
 }
 
-// ════ TAB VL ════
+
 let selVL = [];
 function getValSign(e) {
   if (e[7]==='NG'||e[4]===0) return 'zero';
@@ -863,7 +867,7 @@ Máximo 4 líneas por apartado. Lenguaje técnico-académico conciso.`;
   }
 }
 
-// ════ TAB RX ════
+
 let selRX = [];
 function clickRX(el) {
   if (selRX.length>=2) return;
@@ -959,13 +963,13 @@ Máximo 5 líneas por sección. Lenguaje técnico-académico. Sin viñetas ni as
   }
 }
 
-// ════ UTILS ════
+
 function switchTab(id, btn) {
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById(`tab-${id}`).classList.add('active');
   btn.classList.add('active');
-  // Show scroll hint on mobile when switching tabs
+
   const panel = document.getElementById(`tab-${id}`);
   showScrollHint(panel);
 }

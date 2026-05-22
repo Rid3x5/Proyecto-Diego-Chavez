@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Proyecto de Química</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600;700;900&display=swap');
@@ -19,15 +19,19 @@
   --purple: #b06aff;
   --text: #eeeef5;
   --muted: #5a5a72;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Outfit', sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
 }
 
@@ -48,21 +52,26 @@ body {
 
 
 
+
 .tab-bar {
   display: flex;
-  justify-content: center;
-  gap: 6px;
-  padding: 14px 12px 0;
+  gap: 0;
+  padding: 14px 0 0;
   position: sticky;
   top: 0;
   z-index: 100;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
+.tab-bar::-webkit-scrollbar { display: none; }
+
 .tab-btn {
   flex: 1;
-  max-width: 260px;
-  padding: 11px 14px;
+  min-width: 120px;
+  padding: 12px 16px;
   border: none;
   border-radius: 12px 12px 0 0;
   font-family: 'Outfit', sans-serif;
@@ -74,8 +83,7 @@ body {
   color: var(--muted);
   letter-spacing: 0.2px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  touch-action: manipulation;
 }
 .tab-btn.active {
   background: var(--surface);
@@ -86,8 +94,9 @@ body {
 .tab-btn:not(.active):hover { color: var(--text); background: #202028; }
 
 
-.tab-panel { display: none; padding: 20px 14px 60px; max-width: 1100px; margin: 0 auto; }
+.tab-panel { display: none; padding: 16px 14px 80px; max-width: 1100px; margin: 0 auto; }
 .tab-panel.active { display: block; }
+
 
 
 .pt-grid-wrapper {
@@ -96,6 +105,10 @@ body {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--surface2) transparent;
+  border-radius: 10px;
+
+  mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
 }
 .pt-grid-wrapper::-webkit-scrollbar { height: 4px; }
 .pt-grid-wrapper::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 4px; }
@@ -107,6 +120,7 @@ body {
   min-width: 880px;
   margin: 0 auto 20px;
 }
+
 
 .el {
   background: var(--surface2);
@@ -122,7 +136,10 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
+  touch-action: manipulation;
+  user-select: none;
 }
+.el:active { transform: scale(0.95); opacity: 0.9; }
 .el:hover { background: #2a2a36; transform: scale(1.08); z-index: 5; }
 .el.active  { background: #1a3050; box-shadow: 0 0 0 2px var(--blue); transform: scale(1.1); z-index: 10; }
 .el.active-vl { background: #2a1a40; box-shadow: 0 0 0 2px var(--purple); transform: scale(1.1); z-index: 10; }
@@ -144,6 +161,24 @@ body {
 .el.AC .sym { color: #fb923c; }
 
 
+.scroll-hint-banner {
+  display: none;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 14px;
+  margin-bottom: 10px;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.scroll-hint-banner svg { flex-shrink: 0; }
+.scroll-hint-banner span { font-weight: 600; }
+
+
+
+
 #res-en, #res-rx, #res-vl {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -161,8 +196,6 @@ body {
 }
 
 
-
-
 .badge { display: inline-block; background: rgba(255,45,68,0.1); border: 1px solid rgba(255,45,68,0.3); color: var(--red); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 12px; }
 .badge-vl { display: inline-block; background: rgba(176,106,255,0.12); border: 1px solid rgba(176,106,255,0.35); color: var(--purple); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 12px; }
 
@@ -170,11 +203,10 @@ body {
 .formula-big-vl { font-family: 'Space Mono', monospace; font-size: clamp(1.8rem,5vw,3.5rem); color: var(--purple); margin: 8px 0; letter-spacing: 2px; word-break: break-all; }
 .nombre-comp { font-size: clamp(1.1rem,3.5vw,1.5rem); font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
 .delta-e { font-family: 'Space Mono', monospace; font-size: clamp(1.4rem,4vw,1.8rem); color: var(--red); margin: 8px 0; }
-.ecua { font-family: 'Space Mono', monospace; font-size: clamp(0.72rem,2.2vw,1.1rem); color: var(--red); margin: 8px 0; word-break: break-all; line-height: 1.7; }
+.ecua { font-family: 'Space Mono', monospace; font-size: clamp(0.65rem,2vw,1.1rem); color: var(--red); margin: 8px 0; word-break: break-all; line-height: 1.7; }
 
 .iupac-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-.iupac-box { display: inline-block; font-family: 'Space Mono', monospace; color: var(--cyan); background: rgba(0,229,192,0.07); border: 1px solid rgba(0,229,192,0.2); padding: 7px 14px; border-radius: 8px; margin-bottom: 16px; font-size: clamp(0.72rem,2vw,0.9rem); word-break: break-all; }
-
+.iupac-box { display: inline-block; font-family: 'Space Mono', monospace; color: var(--cyan); background: rgba(0,229,192,0.07); border: 1px solid rgba(0,229,192,0.2); padding: 7px 14px; border-radius: 8px; margin-bottom: 16px; font-size: clamp(0.65rem,2vw,0.9rem); word-break: break-all; max-width: 100%; }
 
 .card-exp { background: var(--surface2); border: 1px solid var(--border); border-left: 4px solid var(--cyan); border-radius: 12px; overflow: hidden; margin-top: 18px; }
 .card-exp-vl { background: var(--surface2); border: 1px solid var(--border); border-left: 4px solid var(--purple); border-radius: 12px; overflow: hidden; margin-top: 18px; }
@@ -190,12 +222,9 @@ body {
 .fm-vl { font-family: 'Space Mono', monospace; color: var(--purple); font-size: .8rem; word-break: break-all; }
 .info-ai { color: var(--text); }
 
-
-
 .data-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
 .data-chip { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 9px; font-size: 10.5px; color: var(--muted); font-family: 'Space Mono', monospace; white-space: nowrap; }
 .data-chip span { color: var(--text); font-weight: 700; }
-
 
 .ai-loading { display: flex; align-items: center; gap: 10px; padding: 14px 0; color: var(--muted); font-size: 0.86rem; }
 .ai-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--cyan); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
@@ -206,11 +235,14 @@ body {
 .err-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
 
 
-.btn-reset { display: block; margin: 20px auto 0; padding: 12px 28px; background: var(--cyan); color: #000; border: none; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; transition: background .2s, transform .1s; }
-.btn-reset:hover { background: #00ccaa; transform: translateY(-1px); }
-.btn-reset-vl { display: block; margin: 20px auto 0; padding: 12px 28px; background: var(--purple); color: #fff; border: none; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; transition: background .2s, transform .1s; }
-.btn-reset-vl:hover { background: #9a55ee; transform: translateY(-1px); }
 
+
+.btn-reset { display: block; margin: 20px auto 0; padding: 14px 28px; background: var(--cyan); color: #000; border: none; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: .9rem; font-weight: 700; cursor: pointer; transition: background .2s, transform .1s; touch-action: manipulation; width: 100%; max-width: 320px; }
+.btn-reset:active { transform: scale(0.97); }
+.btn-reset:hover { background: #00ccaa; transform: translateY(-1px); }
+.btn-reset-vl { display: block; margin: 20px auto 0; padding: 14px 28px; background: var(--purple); color: #fff; border: none; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: .9rem; font-weight: 700; cursor: pointer; transition: background .2s, transform .1s; touch-action: manipulation; width: 100%; max-width: 320px; }
+.btn-reset-vl:active { transform: scale(0.97); }
+.btn-reset-vl:hover { background: #9a55ee; transform: translateY(-1px); }
 
 
 .vl-indicators { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
@@ -219,11 +251,11 @@ body {
 .vl-pill.neg { background: rgba(255,140,105,0.15); border: 1px solid rgba(255,140,105,0.4); color: #ff8c69; }
 .vl-pill.unk { background: rgba(90,90,114,0.15); border: 1px solid rgba(90,90,114,0.4); color: var(--muted); }
 
-
 .enlace-tag { display: inline-block; padding: 4px 13px; border-radius: 6px; font-weight: 700; font-size: 12.5px; margin: 5px 0 12px; }
 .enlace-ionic { background: rgba(255,45,68,0.12); border: 1px solid rgba(255,45,68,0.3); color: var(--red); }
 .enlace-cov { background: rgba(0,229,192,0.1); border: 1px solid rgba(0,229,192,0.25); color: var(--cyan); }
 .enlace-polar { background: rgba(255,209,102,0.12); border: 1px solid rgba(255,209,102,0.3); color: var(--gold); }
+
 
 
 .legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 14px; }
@@ -235,94 +267,117 @@ body {
 .la-label { color: var(--muted); font-size: 10px; padding: 4px 6px; align-self: center; text-align: right; }
 
 
+.tab-intro {
+  text-align: center;
+  color: var(--muted);
+  font-size: .84rem;
+  margin-bottom: 10px;
+  line-height: 1.5;
+  padding: 0 4px;
+}
+
+
 
 @media (max-width: 700px) {
-
-  /* Top */
-  .topbar { padding: 18px 12px 0; }
-  .topbar .sub { font-size: 0.78rem; }
+  .topbar { padding: 16px 14px 0; }
+  .topbar h1 { font-size: 1.3rem; letter-spacing: -0.5px; }
+  .topbar .sub { font-size: 0.76rem; }
 
 
   .tab-bar {
-    gap: 4px;
-    padding: 10px 8px 0;
-    overflow-x: auto;
-    justify-content: flex-start;
-    scrollbar-width: none;
+    padding: 10px 10px 0;
+    gap: 6px;
+    border-bottom: none;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    padding-bottom: 0;
   }
-  .tab-bar::-webkit-scrollbar { display: none; }
   .tab-btn {
     flex: 0 0 auto;
-    max-width: none;
-    font-size: 0.75rem;
-    padding: 9px 12px;
-    border-radius: 10px 10px 0 0;
+    min-width: 0;
+    font-size: 0.74rem;
+    padding: 9px 14px;
+    border-radius: 20px;
+    border-bottom: none !important;
+    margin-bottom: 0;
+  }
+  .tab-btn.active {
+    background: var(--red);
+    color: #fff;
+    border-bottom: none !important;
+  }
+  .tab-btn.tab-vl.active {
+    background: var(--purple);
+    color: #fff;
+    border-bottom: none !important;
   }
 
-
-  .tab-panel { padding: 14px 10px 50px; }
-
-
-  .scroll-hint {
-    display: flex !important;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 6px;
+  .tab-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 8px 0 0;
   }
-  .scroll-hint svg { flex-shrink: 0; opacity: .6; }
+
+  .tab-panel { padding: 14px 12px 100px; }
 
 
-  .pt-grid { grid-template-columns: repeat(18, minmax(36px, 1fr)); gap: 2px; min-width: 660px; }
-  .el { height: 44px; border-radius: 4px; }
-  .el .sym { font-size: 11px; }
-  .el .nm  { font-size: 6px; }
+  .tab-intro { font-size: .78rem; margin-bottom: 8px; }
+
+
+  .vl-indicators { gap: 5px; }
+  .vl-pill { font-size: 10px; padding: 4px 9px; }
+
+
+  .scroll-hint-banner { display: flex; }
+
+
+  .pt-grid { grid-template-columns: repeat(18, minmax(34px, 1fr)); gap: 2px; min-width: 620px; }
+  .el { height: 42px; border-radius: 4px; }
+  .el .sym { font-size: 10px; }
+  .el .nm  { font-size: 5.5px; }
   .el .vl  { display: none; }
 
 
-  #res-en, #res-rx, #res-vl { padding: 16px 14px; border-radius: 12px; }
 
-
-  .formula-big, .formula-big-vl { font-size: 1.7rem; letter-spacing: 1px; }
-  .nombre-comp { font-size: 1.05rem; }
-  .delta-e { font-size: 1.4rem; }
-  .ecua { font-size: 0.7rem; }
-  .iupac-box { font-size: 0.7rem; padding: 6px 10px; }
-
-
-  .bloque { padding: 14px 14px; }
-  .bp { font-size: .82rem; }
-  .btitulo, .btitulo-vl { font-size: 9px; }
-
-
-  .data-chip { font-size: 9.5px; padding: 3px 8px; }
-
-
-  .legend { gap: 6px; }
-  .leg-item { font-size: 10px; }
-
-
-  .vl-indicators { gap: 6px; }
-  .vl-pill { font-size: 10.5px; padding: 5px 10px; }
-
-
-  .btn-reset, .btn-reset-vl {
-    width: 100%;
-    max-width: 320px;
-    padding: 13px 20px;
+  #res-en, #res-rx, #res-vl {
+    padding: 16px 14px;
+    border-radius: 12px;
+    margin-top: 12px;
   }
+  .placeholder { font-size: 0.87rem; padding: 28px 10px; }
+
+
+  .formula-big, .formula-big-vl { font-size: 1.6rem; letter-spacing: 0.5px; }
+  .nombre-comp { font-size: 1rem; }
+  .delta-e { font-size: 1.3rem; }
+  .ecua { font-size: 0.62rem; line-height: 1.6; }
+  .iupac-box { font-size: 0.64rem; padding: 5px 8px; }
+
+
+  .bloque { padding: 13px 12px; }
+  .bp { font-size: .8rem; line-height: 1.65; }
+  .btitulo, .btitulo-vl { font-size: 8.5px; }
+  .fm, .fm-vl { font-size: .72rem; }
+
+
+  .data-chip { font-size: 9px; padding: 3px 7px; }
+
+
+  .legend { gap: 5px; }
+  .leg-item { font-size: 10px; gap: 4px; }
+  .leg-dot { width: 8px; height: 8px; }
 }
 
 
 
 
 @media (max-width: 400px) {
-  .pt-grid { grid-template-columns: repeat(18, minmax(30px, 1fr)); gap: 1px; min-width: 548px; }
-  .el { height: 38px; }
-  .el .sym { font-size: 10px; }
+  .pt-grid { grid-template-columns: repeat(18, minmax(28px, 1fr)); gap: 1px; min-width: 508px; }
+  .el { height: 36px; }
+  .el .sym { font-size: 9px; }
   .el .nm  { display: none; }
-  .tab-btn { font-size: 0.7rem; padding: 8px 10px; }
+  .tab-btn { font-size: 0.68rem; padding: 8px 11px; }
 }
 </style>
 </head>
@@ -333,27 +388,28 @@ body {
   <p class="sub">Diego Chávez · Control: 25041014</p>
 </div>
 
-<div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('en', this)">⚡ Combinaciones por Valencia</button>
-  <button class="tab-btn tab-vl" onclick="switchTab('vl', this)">🔗 Uniones por Valencia Opuesta</button>
-  <button class="tab-btn" onclick="switchTab('rx', this)">🔋 Operaciones Redox</button>
+<div class="tab-bar" id="tabBar">
+  <button class="tab-btn active" onclick="switchTab('en', this)">⚡ Combinaciones</button>
+  <button class="tab-btn tab-vl" onclick="switchTab('vl', this)">🔗 Valencia Opuesta</button>
+  <button class="tab-btn" onclick="switchTab('rx', this)">🔋 Redox</button>
 </div>
+<div class="tab-divider"></div>
 
 
 <div class="tab-panel active" id="tab-en">
-  <p style="text-align:center;color:var(--muted);font-size:.84rem;margin-bottom:10px;line-height:1.5">
+  <p class="tab-intro">
     Haz clic en cualquier elemento activo. Los compatibles se iluminarán según su capacidad de combinación por electronegatividad.
   </p>
   <div class="legend">
-    <span class="leg-item"><span class="leg-dot" style="background:#7dc4ff"></span>Metal alcalino / alcalinotérreo</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#7dc4ff"></span>Metal alc./alcalinotérreo</span>
     <span class="leg-item"><span class="leg-dot" style="background:#ff8c69"></span>No-Metal</span>
-    <span class="leg-item"><span class="leg-dot" style="background:#ffd166"></span>Metal de transición</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#ffd166"></span>Metal transición</span>
     <span class="leg-item"><span class="leg-dot" style="background:#c084fc"></span>Metaloide</span>
-    <span class="leg-item"><span class="leg-dot" style="background:#a8ff8c"></span>Gas noble (inerte)</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#a8ff8c"></span>Gas noble</span>
   </div>
-  <div class="scroll-hint" style="display:none">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    Desliza para ver la tabla completa
+  <div class="scroll-hint-banner">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    <span>Desliza →</span> para ver toda la tabla periódica
   </div>
   <div class="pt-grid-wrapper"><div class="pt-grid" id="grid-en"></div></div>
   <div id="res-en"><div class="placeholder">🔬 Selecciona un elemento para iniciar el análisis de combinaciones</div></div>
@@ -362,24 +418,24 @@ body {
 
 
 <div class="tab-panel" id="tab-vl">
-  <p style="text-align:center;color:var(--muted);font-size:.84rem;margin-bottom:6px;line-height:1.5">
-    Selecciona un elemento. El sistema identificará automáticamente los de signo de valencia opuesto (catión ↔ anión) para formar compuestos binarios estables.
+  <p class="tab-intro">
+    Selecciona un elemento. El sistema identificará los de signo de valencia opuesto (catión ↔ anión) para formar compuestos binarios estables.
   </p>
   <div class="vl-indicators">
-    <span class="vl-pill pos">⊕ Valencia positiva → Cationes / Metales</span>
-    <span class="vl-pill neg">⊖ Valencia negativa → Aniones / No-metales</span>
-    <span class="vl-pill unk">○ Valencia nula → No reactivo</span>
+    <span class="vl-pill pos">⊕ Valencia positiva → Cationes</span>
+    <span class="vl-pill neg">⊖ Valencia negativa → Aniones</span>
+    <span class="vl-pill unk">○ Nula → No reactivo</span>
   </div>
   <div class="legend">
-    <span class="leg-item"><span class="leg-dot" style="background:#7dc4ff"></span>Metal alcalino / alcalinotérreo</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#7dc4ff"></span>Metal alc./alcalinotérreo</span>
     <span class="leg-item"><span class="leg-dot" style="background:#ff8c69"></span>No-Metal</span>
-    <span class="leg-item"><span class="leg-dot" style="background:#ffd166"></span>Metal de transición</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#ffd166"></span>Metal transición</span>
     <span class="leg-item"><span class="leg-dot" style="background:#c084fc"></span>Metaloide</span>
-    <span class="leg-item"><span class="leg-dot" style="background:#a8ff8c"></span>Gas noble (inerte)</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#a8ff8c"></span>Gas noble</span>
   </div>
-  <div class="scroll-hint" style="display:none">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    Desliza para ver la tabla completa
+  <div class="scroll-hint-banner">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    <span>Desliza →</span> para ver toda la tabla periódica
   </div>
   <div class="pt-grid-wrapper"><div class="pt-grid" id="grid-vl"></div></div>
   <div id="res-vl"><div class="placeholder">🔗 Selecciona un elemento para identificar sus posibles uniones por valencia opuesta</div></div>
@@ -388,12 +444,12 @@ body {
 
 
 <div class="tab-panel" id="tab-rx">
-  <p style="text-align:center;color:var(--muted);font-size:.84rem;margin-bottom:14px;line-height:1.5">
-    Selecciona un elemento con potencial de reducción estándar conocido (E°). Los compatibles para una celda galvánica espontánea se iluminarán a continuación.
+  <p class="tab-intro">
+    Selecciona un elemento con potencial de reducción estándar conocido (E°). Los compatibles para una celda galvánica espontánea se iluminarán.
   </p>
-  <div class="scroll-hint" style="display:none">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    Desliza para ver la tabla completa
+  <div class="scroll-hint-banner">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    <span>Desliza →</span> para ver toda la tabla periódica
   </div>
   <div class="pt-grid-wrapper"><div class="pt-grid" id="grid-rx"></div></div>
   <div id="res-rx"><div class="placeholder">🔋 Selecciona un elemento para analizar su comportamiento redox y celda galvánica</div></div>
@@ -533,15 +589,6 @@ const NOMBRES_ANION = {
 const mcd = (x,y) => y===0?x:mcd(y,x%y);
 const sup = v => String(v).split('').map(c=>({'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'}[c]||c)).join('');
 
-
-function showScrollHint(panel) {
-  if (window.innerWidth <= 700) {
-    const hint = panel.querySelector('.scroll-hint');
-    if (hint) hint.style.display = 'flex';
-  }
-}
-
-
 function buildGrid(tabId) {
   const container = document.getElementById(`grid-${tabId}`);
   container.innerHTML = '';
@@ -587,7 +634,9 @@ function makeCard(e, tabId) {
   return div;
 }
 
-// ════ FALLBACK ════
+
+
+
 function generateLocalFallback(prompt) {
   if (prompt.includes("celda galvánica") || prompt.includes("electroq")) {
     return `1. TIPO DE CELDA Y CLASIFICACIÓN: Celda electroquímica galvánica de conversión directa de energía química en eléctrica. Clasificada como celda primaria si es no recargable, o secundaria si admite ciclos de carga/descarga repetidos.
@@ -655,6 +704,10 @@ function clickEN(el) {
         <span style="color:var(--muted);font-size:.82rem;margin-top:6px;display:block">Elige el segundo elemento entre los iluminados para generar el compuesto</span>
       </div>`;
     highlightEN(el);
+
+    if (window.innerWidth <= 700) {
+      setTimeout(() => document.getElementById('res-en').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+    }
   } else {
     if (selEN[0][0] === el[0]) return;
     selEN.push(el); card.classList.add('active'); processEN();
@@ -728,6 +781,9 @@ function processEN() {
       </div>
       <div class="bloque" id="ai-en">${loadingHTML('Consultando propiedades fisicoquímicas, aplicaciones tecnológicas y valor en mercado…')}</div>
     </div>`;
+  if (window.innerWidth <= 700) {
+    setTimeout(() => document.getElementById('res-en').scrollIntoView({behavior:'smooth', block:'start'}), 100);
+  }
   fetchAndRender(formulaRaw, nombreFinal, 'ai-en', false);
 }
 
@@ -744,7 +800,7 @@ Máximo 4 líneas por sección. Lenguaje técnico-académico conciso.`;
     const txt = await callClaude(prompt);
     const target = document.getElementById(targetId);
     if (target) target.innerHTML = `
-      <div class="${isVl?'btitulo-vl':'btitulo'}">📊 Propiedades · Tecnología · Production · Mercado Global</div>
+      <div class="${isVl?'btitulo-vl':'btitulo'}">📊 Propiedades · Tecnología · Producción · Mercado Global</div>
       <div class="info-ai bp" style="white-space:pre-wrap;line-height:1.9">${escHtml(txt)}</div>`;
   } catch(e) {
     const t = document.getElementById(targetId);
@@ -772,6 +828,9 @@ function clickVL(el) {
         <span style="color:var(--muted);font-size:.82rem;margin-top:6px;display:block">Selecciona un elemento con signo de valencia opuesto (iluminados en púrpura)</span>
       </div>`;
     highlightVL(el);
+    if (window.innerWidth <= 700) {
+      setTimeout(() => document.getElementById('res-vl').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+    }
   } else {
     selVL.push(el); card.classList.add('active-vl'); processVL();
   }
@@ -843,6 +902,9 @@ function processVL() {
       </div>
       <div class="bloque" id="ai-vl">${loadingHTML('Consultando propiedades, usos tecnológicos y producción global…',true)}</div>
     </div>`;
+  if (window.innerWidth <= 700) {
+    setTimeout(() => document.getElementById('res-vl').scrollIntoView({behavior:'smooth', block:'start'}), 100);
+  }
   fetchAndRenderVL(formulaRaw,nombreFinal,cation,anion,tipoEnlace,subC,subA);
 }
 
@@ -868,6 +930,7 @@ Máximo 4 líneas por apartado. Lenguaje técnico-académico conciso.`;
 }
 
 
+
 let selRX = [];
 function clickRX(el) {
   if (selRX.length>=2) return;
@@ -882,6 +945,9 @@ function clickRX(el) {
         <span style="color:var(--muted);font-size:.82rem;margin-top:6px;display:block">Selecciona el segundo elemento para calcular la celda galvánica y su potencial electromotriz</span>
       </div>`;
     highlightRX(el);
+    if (window.innerWidth <= 700) {
+      setTimeout(() => document.getElementById('res-rx').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+    }
   } else {
     selRX.push(el); card.classList.add('active'); processRX();
   }
@@ -941,6 +1007,9 @@ function processRX() {
       </div>
       <div class="bloque" id="ai-rx">${loadingHTML('Consultando clasificación de la celda, aplicaciones industriales y relevancia tecnológica…')}</div>
     </div>`;
+  if (window.innerWidth <= 700) {
+    setTimeout(() => document.getElementById('res-rx').scrollIntoView({behavior:'smooth', block:'start'}), 100);
+  }
   fetchAndRenderRX(ano,cat,dE,dG,ne);
 }
 
@@ -970,8 +1039,7 @@ function switchTab(id, btn) {
   document.getElementById(`tab-${id}`).classList.add('active');
   btn.classList.add('active');
 
-  const panel = document.getElementById(`tab-${id}`);
-  showScrollHint(panel);
+  btn.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
 }
 
 function resetTab(id) {
@@ -987,11 +1055,8 @@ function resetTab(id) {
   document.getElementById(`res-${id}`).innerHTML=`<div class="placeholder">${placeholders[id]}</div>`;
 }
 
-// Init
-buildGrid('en'); buildGrid('vl'); buildGrid('rx');
 
-// Show hints if mobile on load
-document.querySelectorAll('.tab-panel.active').forEach(showScrollHint);
+buildGrid('en'); buildGrid('vl'); buildGrid('rx');
 </script>
 </body>
 </html>

@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyecto de Química</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600;700;900&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1c1c26;
+  --border: rgba(255,255,255,0.06);
+  --red: #ff2d44;
+  --cyan: #00e5c0;
+  --blue: #3d8fff;
+  --gold: #ffd166;
+  --purple: #b06aff;
+  --text: #eeeef5;
+  --muted: #5a5a72;
+  --tab-h: 72px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.topbar {
+  text-align: center;
+  padding: 28px 20px 0;
+  position: relative;
+}
+.topbar h1 {
+  font-size: clamp(1.3rem, 4vw, 2.1rem);
+  font-weight: 900;
+  letter-spacing: -1px;
+  background: linear-gradient(90deg, var(--red), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.topbar .sub { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
+
+.tab-bar {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  flex: 1;
+  max-width: 260px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 14px 14px 0 0;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all .25s;
+  background: var(--surface2);
+  color: var(--muted);
+  letter-spacing: 0.3px;
+}
+.tab-btn.active {
+  background: var(--surface);
+  color: var(--text);
+  border-bottom: 3px solid var(--red);
+}
+.tab-btn.tab-vl.active { border-bottom-color: var(--purple); }
+.tab-btn:not(.active):hover { color: var(--text); background: #202028; }
+
+.tab-panel { display: none; padding: 24px 16px 60px; max-width: 1100px; margin: 0 auto; }
+.tab-panel.active { display: block; }
+
+.pt-grid {
+  display: grid;
+  grid-template-columns: repeat(18, 1fr);
+  gap: 3px;
+  max-width: 1080px;
+  margin: 0 auto 20px;
+  overflow-x: auto;
+}
+.pt-grid-wrapper { overflow-x: auto; padding-bottom: 8px; }
+
+.el {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 2px;
+  text-align: center;
+  transition: all .18s;
+  min-width: 52px;
+  height: 62px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.el:hover { background: #2a2a36; transform: scale(1.08); z-index: 5; }
+.el.active  { background: #1a3050; box-shadow: 0 0 0 2px var(--blue); transform: scale(1.1); z-index: 10; }
+.el.active-vl { background: #2a1a40; box-shadow: 0 0 0 2px var(--purple); transform: scale(1.1); z-index: 10; }
+.el.compat  { box-shadow: 0 0 0 2px rgba(255,255,255,0.7); background: #1e2030; }
+.el.compat-vl { box-shadow: 0 0 0 2px var(--purple); background: #1e1a30; }
+.el.incompat { opacity: .12; pointer-events: none; }
+.el.empty   { background: transparent; border-color: transparent; cursor: default; pointer-events: none; }
+
+.el .sym  { font-size: 16px; font-weight: 700; color: #fff; line-height: 1; }
+.el .nm   { font-size: 8px; color: #7a7a96; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+.el .vl   { font-size: 7px; color: #555570; font-family: 'Space Mono', monospace; margin-top: 1px; }
+
+.el.M  .sym { color: #7dc4ff; }
+.el.NM .sym { color: #ff8c69; }
+.el.NG .sym { color: #a8ff8c; }
+.el.TM .sym { color: #ffd166; }
+.el.MT .sym { color: #c084fc; }
+.el.LA .sym { color: #f9a8d4; }
+.el.AC .sym { color: #fb923c; }
+
+#res-en, #res-rx, #res-vl {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 24px;
+  min-height: 180px;
+  margin-top: 20px;
+}
+.placeholder { color: var(--muted); text-align: center; font-size: 1rem; padding: 40px 0; }
+.badge { display: inline-block; background: rgba(255,45,68,0.1); border: 1px solid rgba(255,45,68,0.3); color: var(--red); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+.badge-vl { display: inline-block; background: rgba(176,106,255,0.12); border: 1px solid rgba(176,106,255,0.35); color: var(--purple); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+.formula-big { font-family: 'Space Mono', monospace; font-size: clamp(2rem,6vw,3.5rem); color: var(--red); margin: 10px 0; letter-spacing: 2px; }
+.formula-big-vl { font-family: 'Space Mono', monospace; font-size: clamp(2rem,6vw,3.5rem); color: var(--purple); margin: 10px 0; letter-spacing: 2px; }
+.nombre-comp { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+.delta-e { font-family: 'Space Mono', monospace; font-size: 1.8rem; color: var(--red); margin: 8px 0; }
+.ecua { font-family: 'Space Mono', monospace; font-size: clamp(0.8rem, 2.5vw, 1.2rem); color: var(--red); margin: 8px 0; word-break: break-all; line-height: 1.7; }
+.iupac-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+.iupac-box { display: inline-block; font-family: 'Space Mono', monospace; color: var(--cyan); background: rgba(0,229,192,0.07); border: 1px solid rgba(0,229,192,0.2); padding: 7px 16px; border-radius: 8px; margin-bottom: 18px; font-size: 0.9rem; }
+
+.card-exp { background: var(--surface2); border: 1px solid var(--border); border-left: 4px solid var(--cyan); border-radius: 12px; overflow: hidden; margin-top: 20px; }
+.card-exp-vl { background: var(--surface2); border: 1px solid var(--border); border-left: 4px solid var(--purple); border-radius: 12px; overflow: hidden; margin-top: 20px; }
+.bloque { padding: 18px 22px; border-top: 1px solid var(--border); }
+.bloque:first-child { border-top: none; }
+.btitulo { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); margin-bottom: 10px; }
+.btitulo-vl { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--purple); margin-bottom: 10px; }
+.bp { font-size: .88rem; color: #8a8aa8; line-height: 1.75; margin-bottom: 8px; }
+.bp:last-child { margin-bottom: 0; }
+.nel { color: var(--cyan); font-weight: 600; }
+.nel-vl { color: var(--purple); font-weight: 600; }
+.fm  { font-family: 'Space Mono', monospace; color: var(--red); font-size: .82rem; }
+.fm-vl { font-family: 'Space Mono', monospace; color: var(--purple); font-size: .82rem; }
+.info-ai { color: var(--text); }
+
+.ai-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.ai-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-top-color: var(--cyan);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+.ai-spinner-vl { border-top-color: var(--purple); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.btn-reset { display: block; margin: 22px auto 0; padding: 13px 32px; background: var(--cyan); color: #000; border: none; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: .9rem; font-weight: 700; cursor: pointer; transition: background .2s, transform .1s; }
+.btn-reset:hover { background: #00ccaa; transform: translateY(-1px); }
+.btn-reset-vl { display: block; margin: 22px auto 0; padding: 13px 32px; background: var(--purple); color: #fff; border: none; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: .9rem; font-weight: 700; cursor: pointer; transition: background .2s, transform .1s; }
+.btn-reset-vl:hover { background: #9a55ee; transform: translateY(-1px); }
+
+.vl-indicators { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
+.vl-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+.vl-pill.pos { background: rgba(61,143,255,0.15); border: 1px solid rgba(61,143,255,0.4); color: #7ab8ff; }
+.vl-pill.neg { background: rgba(255,140,105,0.15); border: 1px solid rgba(255,140,105,0.4); color: #ff8c69; }
+.vl-pill.unk { background: rgba(90,90,114,0.15); border: 1px solid rgba(90,90,114,0.4); color: var(--muted); }
+
+.enlace-tag { display: inline-block; padding: 4px 14px; border-radius: 6px; font-weight: 700; font-size: 13px; margin: 6px 0 14px; }
+.enlace-ionic { background: rgba(255,45,68,0.12); border: 1px solid rgba(255,45,68,0.3); color: var(--red); }
+.enlace-cov { background: rgba(0,229,192,0.1); border: 1px solid rgba(0,229,192,0.25); color: var(--cyan); }
+.enlace-polar { background: rgba(255,209,102,0.12); border: 1px solid rgba(255,209,102,0.3); color: var(--gold); }
+
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; }
+@media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
+
+.pt-sep { grid-column: 1 / -1; height: 8px; }
+.la-label { color: var(--muted); font-size: 10px; padding: 4px 6px; align-self: center; text-align: right; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 16px; }
+.leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+.leg-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+.err-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(255,45,68,0.07);
+  border: 1px solid rgba(255,45,68,0.25);
+  border-radius: 10px;
+  padding: 14px 18px;
+  color: #ff8095;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.err-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+
+/* Tabla resumen de propiedades */
+.prop-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.83rem; }
+.prop-table td { padding: 6px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.prop-table td:first-child { color: var(--muted); width: 38%; font-weight: 600; white-space: nowrap; }
+.prop-table td:last-child { color: var(--text); }
+.prop-table tr:last-child td { border-bottom: none; }
+
+/* Chips de tipo enlace */
+.data-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.data-chip { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+.data-chip span { color: var(--text); font-weight: 700; }
+
+@media (max-width: 700px) {
+  .pt-grid { grid-template-columns: repeat(18, minmax(38px,1fr)); gap: 2px; }
+  .el { min-width: 38px; height: 48px; border-radius: 4px; }
+  .el .sym { font-size: 12px; }
+  .el .nm  { display: none; }
+  .el .vl  { display: none; }
+  .tab-btn { font-size: 0.72rem; padding: 10px 6px; }
+  .formula-big, .formula-big-vl { font-size: 2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>⚗ Proyecto de Química</h1>
+  <p class="sub">Diego Chávez · Control: 25041014</p>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('en', this)">⚡ Combinaciones por Valencia</button>
+  <button class="tab-btn tab-vl" onclick="switchTab('vl', this)">🔗 Uniones por Valencia Opuesta</button>
+  <button class="tab-btn" onclick="switchTab('rx', this)">🔋 Operaciones Redox</button>
+</div>
+
+<!-- ═══════════ TAB COMBINACIONES POR VALENCIA ═══════════ -->
+<div class="tab-panel active" id="tab-en">
+  <p style="text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:14px">
+    Haz clic en cualquier elemento activo para seleccionarlo. Los elementos compatibles se iluminarán automáticamente según su capacidad de combinación por electronegatividad.
+  </p>
+  <div class="legend">
+    <span class="leg-item"><span class="leg-dot" style="background:#7dc4ff"></span>Metal alcalino / alcalinotérreo</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#ff8c69"></span>No-Metal</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#ffd166"></span>Metal de transición</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#c084fc"></span>Metaloide</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#a8ff8c"></span>Gas noble (inerte)</span>
+  </div>
+  <div class="pt-grid-wrapper"><div class="pt-grid" id="grid-en"></div></div>
+  <div id="res-en"><div class="placeholder">🔬 Selecciona un elemento para iniciar el análisis de combinaciones</div></div>
+  <button class="btn-reset" onclick="resetTab('en')">↺ Nueva selección</button>
+</div>
+
+<!-- ═══════════ TAB VALENCIA OPUESTA ═══════════ -->
+<div class="tab-panel" id="tab-vl">
+  <p style="text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:6px">
+    Selecciona cualquier elemento activo. El sistema identificará automáticamente los elementos con signo de valencia opuesto (catión ↔ anión) para formar compuestos binarios estables.
+  </p>
+  <div class="vl-indicators">
+    <span class="vl-pill pos">⊕ Valencia positiva → Cationes / Metales</span>
+    <span class="vl-pill neg">⊖ Valencia negativa → Aniones / No-metales</span>
+    <span class="vl-pill unk">○ Valencia nula → No reactivo</span>
+  </div>
+  <div class="legend">
+    <span class="leg-item"><span class="leg-dot" style="background:#7dc4ff"></span>Metal alcalino / alcalinotérreo</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#ff8c69"></span>No-Metal</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#ffd166"></span>Metal de transición</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#c084fc"></span>Metaloide</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#a8ff8c"></span>Gas noble (inerte)</span>
+  </div>
+  <div class="pt-grid-wrapper"><div class="pt-grid" id="grid-vl"></div></div>
+  <div id="res-vl"><div class="placeholder">🔗 Selecciona un elemento para identificar sus posibles uniones por valencia opuesta</div></div>
+  <button class="btn-reset-vl" onclick="resetTab('vl')">↺ Nueva selección</button>
+</div>
+
+<!-- ═══════════ TAB REDOX ═══════════ -->
+<div class="tab-panel" id="tab-rx">
+  <p style="text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:14px">
+    Selecciona un elemento con potencial de reducción estándar conocido (E°). Los elementos compatibles para formar una celda galvánica espontánea se iluminarán a continuación.
+  </p>
+  <div class="pt-grid-wrapper"><div class="pt-grid" id="grid-rx"></div></div>
+  <div id="res-rx"><div class="placeholder">🔋 Selecciona un elemento para analizar su comportamiento redox y celda galvánica</div></div>
+  <button class="btn-reset" onclick="resetTab('rx')">↺ Nueva selección</button>
+</div>
+
+<script>
+const ELEM = [
+ [1,  "H",  "Hidrógeno",  2.20,  1,   1,   0.00,  "NM", 1, 1],
+ [2,  "He", "Helio",      0.00,  0,   0,   null,  "NG", 18, 1],
+ [3,  "Li", "Litio",      0.98,  1,   1,  -3.04,  "M",  1, 2],
+ [4,  "Be", "Berilio",    1.57,  2,   2,  -1.85,  "M",  2, 2],
+ [5,  "B",  "Boro",       2.04,  3,   3,   null,  "MT", 13, 2],
+ [6,  "C",  "Carbono",    2.55, -4,   4,   null,  "NM", 14, 2],
+ [7,  "N",  "Nitrógeno",  3.04, -3,   5,   null,  "NM", 15, 2],
+ [8,  "O",  "Oxígeno",    3.44, -2,   6,   null,  "NM", 16, 2],
+ [9,  "F",  "Flúor",      3.98, -1,   7,   null,  "NM", 17, 2],
+ [10, "Ne", "Neón",       0.00,  0,   0,   null,  "NG", 18, 2],
+ [11, "Na", "Sodio",      0.93,  1,   1,  -2.71,  "M",  1, 3],
+ [12, "Mg", "Magnesio",   1.31,  2,   2,  -2.37,  "M",  2, 3],
+ [13, "Al", "Aluminio",   1.61,  3,   3,  -1.66,  "M",  13, 3],
+ [14, "Si", "Silicio",    1.90, -4,   4,   null,  "MT", 14, 3],
+ [15, "P",  "Fósforo",    2.19, -3,   5,   null,  "NM", 15, 3],
+ [16, "S",  "Azufre",     2.58, -2,   6,   null,  "NM", 16, 3],
+ [17, "Cl", "Cloro",      3.16, -1,   7,   null,  "NM", 17, 3],
+ [18, "Ar", "Argón",      0.00,  0,   0,   null,  "NG", 18, 3],
+ [19, "K",  "Potasio",    0.82,  1,   1,  -2.93,  "M",  1, 4],
+ [20, "Ca", "Calcio",     1.00,  2,   2,  -2.87,  "M",  2, 4],
+ [21, "Sc", "Escandio",   1.36,  3,   3,  -1.37,  "TM", 3, 4],
+ [22, "Ti", "Titanio",    1.54,  4,   4,  -1.63,  "TM", 4, 4],
+ [23, "V",  "Vanadio",    1.63,  5,   5,  -1.13,  "TM", 5, 4],
+ [24, "Cr", "Cromo",      1.66,  3,   3,  -0.74,  "TM", 6, 4],
+ [25, "Mn", "Manganeso",  1.55,  2,   2,  -1.18,  "TM", 7, 4],
+ [26, "Fe", "Hierro",     1.83,  3,   3,  -0.44,  "TM", 8, 4],
+ [27, "Co", "Cobalto",    1.88,  2,   2,  -0.28,  "TM", 9, 4],
+ [28, "Ni", "Níquel",     1.91,  2,   2,  -0.25,  "TM", 10, 4],
+ [29, "Cu", "Cobre",      1.90,  2,   2,   0.34,  "TM", 11, 4],
+ [30, "Zn", "Zinc",       1.65,  2,   2,  -0.76,  "TM", 12, 4],
+ [31, "Ga", "Galio",      1.81,  3,   3,   null,  "M",  13, 4],
+ [32, "Ge", "Germanio",   2.01, -4,   4,   null,  "MT", 14, 4],
+ [33, "As", "Arsénico",   2.18, -3,   5,   0.24,  "MT", 15, 4],
+ [34, "Se", "Selenio",    2.55, -2,   6,   null,  "NM", 16, 4],
+ [35, "Br", "Bromo",      2.96, -1,   7,   null,  "NM", 17, 4],
+ [36, "Kr", "Kriptón",    3.00,  0,   0,   null,  "NG", 18, 4],
+ [37, "Rb", "Rubidio",    0.82,  1,   1,  -2.98,  "M",  1, 5],
+ [38, "Sr", "Estroncio",  0.95,  2,   2,  -2.89,  "M",  2, 5],
+ [39, "Y",  "Itrio",      1.22,  3,   3,  -2.37,  "TM", 3, 5],
+ [40, "Zr", "Circonio",   1.33,  4,   4,  -1.45,  "TM", 4, 5],
+ [41, "Nb", "Niobio",     1.60,  5,   5,  -1.10,  "TM", 5, 5],
+ [42, "Mo", "Molibdeno",  2.16,  6,   6,  -0.20,  "TM", 6, 5],
+ [43, "Tc", "Tecnecio",   1.90,  4,   4,   0.40,  "TM", 7, 5],
+ [44, "Ru", "Rutenio",    2.20,  3,   3,   0.45,  "TM", 8, 5],
+ [45, "Rh", "Rodio",      2.28,  3,   3,   0.60,  "TM", 9, 5],
+ [46, "Pd", "Paladio",    2.20,  2,   2,   0.95,  "TM", 10, 5],
+ [47, "Ag", "Plata",      1.93,  1,   1,   0.80,  "TM", 11, 5],
+ [48, "Cd", "Cadmio",     1.69,  2,   2,  -0.40,  "TM", 12, 5],
+ [49, "In", "Indio",      1.78,  3,   3,  -0.34,  "M",  13, 5],
+ [50, "Sn", "Estaño",     1.96,  4,   4,  -0.14,  "M",  14, 5],
+ [51, "Sb", "Antimonio",  2.05, -3,   5,   null,  "MT", 15, 5],
+ [52, "Te", "Telurio",    2.10, -2,   6,   null,  "MT", 16, 5],
+ [53, "I",  "Yodo",       2.66, -1,   7,   null,  "NM", 17, 5],
+ [54, "Xe", "Xenón",      2.60,  0,   0,   null,  "NG", 18, 5],
+ [55, "Cs", "Cesio",      0.79,  1,   1,  -2.92,  "M",  1, 6],
+ [56, "Ba", "Bario",      0.89,  2,   2,  -2.91,  "M",  2, 6],
+ [57, "La", "Lantano",    1.10,  3,   3,  -2.52,  "LA", 3, 6],
+ [58, "Ce", "Cerio",      1.12,  4,   4,  -2.34,  "LA", 4, 9],
+ [59, "Pr", "Praseodimio",1.13,  3,   3,  -2.35,  "LA", 5, 9],
+ [60, "Nd", "Neodimio",   1.14,  3,   3,  -2.32,  "LA", 6, 9],
+ [61, "Pm", "Prometio",   1.13,  3,   3,  -2.30,  "LA", 7, 9],
+ [62, "Sm", "Samario",    1.17,  3,   3,  -2.30,  "LA", 8, 9],
+ [63, "Eu", "Europio",    1.20,  3,   3,  -1.99,  "LA", 9, 9],
+ [64, "Gd", "Gadolinio",  1.20,  3,   3,  -2.28,  "LA", 10, 9],
+ [65, "Tb", "Terbio",     1.10,  3,   3,  -2.31,  "LA", 11, 9],
+ [66, "Dy", "Disprosio",  1.22,  3,   3,  -2.29,  "LA", 12, 9],
+ [67, "Ho", "Holmio",     1.23,  3,   3,  -2.33,  "LA", 13, 9],
+ [68, "Er", "Erbio",      1.24,  3,   3,  -2.32,  "LA", 14, 9],
+ [69, "Tm", "Tulio",      1.25,  3,   3,  -2.28,  "LA", 15, 9],
+ [70, "Yb", "Iterbio",    1.10,  3,   3,  -2.19,  "LA", 16, 9],
+ [71, "Lu", "Lutecio",    1.27,  3,   3,  -2.28,  "LA", 17, 9],
+ [72, "Hf", "Hafnio",     1.30,  4,   4,  -1.55,  "TM", 4, 6],
+ [73, "Ta", "Tántalo",    1.50,  5,   5,  -0.81,  "TM", 5, 6],
+ [74, "W",  "Tungsteno",  2.36,  6,   6,  -0.09,  "TM", 6, 6],
+ [75, "Re", "Renio",      1.90,  4,   4,   0.30,  "TM", 7, 6],
+ [76, "Os", "Osmio",      2.20,  4,   4,   0.65,  "TM", 8, 6],
+ [77, "Ir", "Iridio",     2.20,  3,   3,   1.16,  "TM", 9, 6],
+ [78, "Pt", "Platino",    2.28,  2,   2,   1.18,  "TM", 10, 6],
+ [79, "Au", "Oro",        2.54,  3,   3,   1.50,  "TM", 11, 6],
+ [80, "Hg", "Mercurio",   2.00,  2,   2,   0.85,  "TM", 12, 6],
+ [81, "Tl", "Talio",      1.62,  3,   3,  -0.34,  "M",  13, 6],
+ [82, "Pb", "Plomo",      2.33,  4,   4,  -0.13,  "M",  14, 6],
+ [83, "Bi", "Bismuto",    2.02,  3,   3,   0.20,  "M",  15, 6],
+ [84, "Po", "Polonio",    2.00, -2,   6,   null,  "MT", 16, 6],
+ [85, "At", "Astato",     2.20, -1,   7,   null,  "MT", 17, 6],
+ [86, "Rn", "Radón",      0.00,  0,   0,   null,  "NG", 18, 6],
+ [87, "Fr", "Francio",    0.70,  1,   1,   null,  "M",  1, 7],
+ [88, "Ra", "Radio",      0.90,  2,   2,  -2.92,  "M",  2, 7],
+ [89, "Ac", "Actinio",    1.10,  3,   3,  -2.13,  "AC", 3, 7],
+ [90, "Th", "Torio",      1.30,  4,   4,  -1.90,  "AC", 4, 10],
+ [91, "Pa", "Protactinio",1.50,  5,   5,  -1.49,  "AC", 5, 10],
+ [92, "U",  "Uranio",     1.38,  6,   6,  -1.79,  "AC", 6, 10],
+ [93, "Np", "Neptunio",   1.36,  5,   5,  -1.86,  "AC", 7, 10],
+ [94, "Pu", "Plutonio",   1.28,  3,   3,  -2.03,  "AC", 8, 10],
+ [95, "Am", "Americio",   1.30,  3,   3,  -2.07,  "AC", 9, 10],
+ [96, "Cm", "Curio",      1.30,  3,   3,  -2.06,  "AC", 10, 10],
+ [97, "Bk", "Berkelio",   1.30,  3,   3,  -2.01,  "AC", 11, 10],
+ [98, "Cf", "Californio", 1.30,  3,   3,  -1.98,  "AC", 12, 10],
+ [99, "Es", "Einstenio",  1.30,  3,   3,  -1.98,  "AC", 13, 10],
+ [100,"Fm", "Fermio",     1.30,  3,   3,  -1.96,  "AC", 14, 10],
+ [101,"Md", "Mendelevio", 1.30,  3,   3,  -1.65,  "AC", 15, 10],
+ [102,"No", "Nobelio",    1.30,  3,   3,  -1.21,  "AC", 16, 10],
+ [103,"Lr", "Lawrencio",  1.30,  3,   3,  -2.06,  "AC", 17, 10],
+ [104,"Rf", "Rutherfordio",null, 4,   4,   null,  "TM", 4, 7],
+ [105,"Db", "Dubnio",     null,  5,   5,   null,  "TM", 5, 7],
+ [106,"Sg", "Seaborgio",  null,  6,   6,   null,  "TM", 6, 7],
+ [107,"Bh", "Bohrio",     null,  7,   7,   null,  "TM", 7, 7],
+ [108,"Hs", "Hasio",      null,  8,   8,   null,  "TM", 8, 7],
+ [109,"Mt", "Meitnerio",  null,  3,   3,   null,  "TM", 9, 7],
+ [110,"Ds", "Darmstadtio",null,  2,   2,   null,  "TM", 10, 7],
+ [111,"Rg", "Roentgenio", null,  1,   1,   null,  "TM", 11, 7],
+ [112,"Cn", "Copernicio", null,  2,   2,   null,  "TM", 12, 7],
+ [113,"Nh", "Nihonio",    null,  3,   3,   null,  "M",  13, 7],
+ [114,"Fl", "Flerovio",   null,  4,   4,   null,  "M",  14, 7],
+ [115,"Mc", "Moscovio",   null,  3,   3,   null,  "M",  15, 7],
+ [116,"Lv", "Livermorio", null,  2,   2,   null,  "M",  16, 7],
+ [117,"Ts", "Teneso",     null, -1,   7,   null,  "NM", 17, 7],
+ [118,"Og", "Oganesón",   0.00,  0,   0,   null,  "NG", 18, 7],
+];
+
+const NOMBRES_ANION = {
+  "F":"Fluoruro","Cl":"Cloruro","Br":"Bromuro","I":"Yoduro","At":"Astaturo",
+  "O":"Óxido","S":"Sulfuro","Se":"Seleniuro","Te":"Telururo","Po":"Poloniuro",
+  "N":"Nitruro","P":"Fosfuro","As":"Arseniuro","Sb":"Antimoniuro",
+  "C":"Carburo","Si":"Siliciuro","Ge":"Germaniuro",
+  "H":"Hidruro","B":"Boruro","Ts":"Tenesuro"
+};
+
+const mcd = (x,y) => y===0?x:mcd(y,x%y);
+const sup = v => String(v).split('').map(c=>({'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'}[c]||c)).join('');
+
+
+function buildGrid(tabId) {
+  const container = document.getElementById(`grid-${tabId}`);
+  container.innerHTML = '';
+  const byPos = {};
+  ELEM.forEach(e => { byPos[`${e[9]}_${e[8]}`] = e; });
+
+  for (let r = 1; r <= 7; r++) {
+    for (let c = 1; c <= 18; c++) {
+      container.appendChild(makeCard(byPos[`${r}_${c}`], tabId));
+    }
+    if (r === 7) {
+      const sp = document.createElement('div');
+      sp.className = 'pt-sep'; sp.style.gridColumn = '1 / -1';
+      container.appendChild(sp);
+      const laLabel = document.createElement('div');
+      laLabel.className = 'el empty la-label';
+      laLabel.style.gridColumn = '1 / 4';
+      laLabel.innerHTML = '<span style="font-size:9px;color:#5a5a72">La–Lu</span>';
+      container.appendChild(laLabel);
+      for (let c2 = 4; c2 <= 17; c2++) container.appendChild(makeCard(byPos[`9_${c2}`], tabId));
+      const laEnd = document.createElement('div'); laEnd.className='el empty'; container.appendChild(laEnd);
+      const acLabel = document.createElement('div');
+      acLabel.className = 'el empty la-label';
+      acLabel.style.gridColumn = '1 / 4';
+      acLabel.innerHTML = '<span style="font-size:9px;color:#5a5a72">Ac–Lr</span>';
+      container.appendChild(acLabel);
+      for (let c2 = 4; c2 <= 17; c2++) container.appendChild(makeCard(byPos[`10_${c2}`], tabId));
+      const acEnd = document.createElement('div'); acEnd.className='el empty'; container.appendChild(acEnd);
+    }
+  }
+}
+
+function makeCard(e, tabId) {
+  const div = document.createElement('div');
+  if (!e) { div.className='el empty'; return div; }
+  div.className = `el ${e[7]}`;
+  div.id = `${tabId}-${e[0]}`;
+  const valStr = e[4] !== 0 ? (e[4]>0?`+${e[4]}`:e[4]) : '–';
+  div.innerHTML = `<span class="sym">${e[1]}</span><span class="nm">${e[2]}</span><span class="vl">Val: ${valStr}</span>`;
+  if (tabId === 'en') div.onclick = () => clickEN(e);
+  else if (tabId === 'rx') div.onclick = () => clickRX(e);
+  else if (tabId === 'vl') div.onclick = () => clickVL(e);
+  return div;
+}
+
+
+function generateLocalFallback(prompt) {
+  if (prompt.includes("celda galvánica") || prompt.includes("electroq")) {
+    return `1. TIPO DE CELDA Y CLASIFICACIÓN: Celda electroquímica galvánica de conversión directa de energía química en eléctrica. Clasificada como celda primaria si es no recargable, o secundaria si admite ciclos de carga/descarga repetidos.
+2. APLICACIONES INDUSTRIALES: Empleada en sistemas de almacenamiento energético portátil, en celdas de referencia para calibración analítica y en procesos de galvanoplastia industrial a escala controlada.
+3. RELEVANCIA TECNOLÓGICA: Fundamental en el diseño de baterías para vehículos eléctricos, sistemas de energía renovable y dispositivos electrónicos de consumo masivo.
+4. PRODUCCIÓN Y MERCADO: El mercado global de celdas electroquímicas supera los 120,000 millones USD anuales, con una tasa de crecimiento sostenida del 15% impulsada por la transición energética.`;
+  }
+  return `1. PROPIEDADES FÍSICAS: Sólido cristalino o molecular a 25°C con estructura y coloración características; punto de fusión y ebullición determinados por la naturaleza del enlace y la masa molar del compuesto.
+2. PROPIEDADES QUÍMICAS: Presenta reactividad selectiva determinada por la diferencia de electronegatividad entre sus componentes; solubilidad variable en función de la polaridad del enlace y el disolvente empleado.
+3. UTILIDAD EN TECNOLOGÍA Y DESARROLLO TECNOLÓGICO: Empleado en procesos de catálisis heterogénea, fabricación de materiales semiconductor avanzados y síntesis de recubrimientos protectores de alta durabilidad.
+4. PRODUCCIÓN MUNDIAL: Producción anual estimada en decenas de miles de toneladas métricas, con demanda creciente en sectores de manufactura avanzada, electrónica y química fina.
+5. PAÍSES PRODUCTORES: Los principales centros de producción se ubican en China, Estados Unidos y Alemania, líderes en capacidad instalada de síntesis química industrial.
+6. VALOR EN MERCADO: Precio regulado por la pureza del grado comercial requerido; oscila entre cientos y miles de dólares por tonelada métrica según especificaciones de la industria usuaria.`;
+}
+
+
+async function callClaude(prompt) {
+  const apiKey = "TU_API_KEY_AQUI";
+  if (apiKey === "TU_API_KEY_AQUI" || !apiKey || apiKey.trim() === "") {
+    return new Promise(resolve => setTimeout(() => resolve(generateLocalFallback(prompt)), 600));
+  }
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+  if (resp.status === 401) throw new Error('Clave API inválida. Verifica tu configuración en console.anthropic.com');
+  if (!resp.ok) { const e = await resp.text().catch(()=>''); throw new Error('Error ' + resp.status + ': ' + e); }
+  const data = await resp.json();
+  if (data.error) throw new Error(data.error.message || 'Error en la API');
+  return data.content?.map(i => i.text || '').join('') || '';
+}
+
+function loadingHTML(msg, isVl = false) {
+  return `<div class="ai-loading"><div class="ai-spinner${isVl?' ai-spinner-vl':''}"></div><span>${msg}</span></div>`;
+}
+function errorHTML(msg) {
+  return `<div class="err-msg"><span class="err-icon">⚠</span><span>${msg}</span></div>`;
+}
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ════ TAB EN ════
+let selEN = [];
+function clickEN(el) {
+  if (selEN.length >= 2) return;
+  if (el[7]==='NG') return;
+  const card = document.getElementById(`en-${el[0]}`);
+  if (selEN.length === 0) {
+    selEN.push(el);
+    card.classList.add('active');
+    document.getElementById('res-en').innerHTML = `
+      <div class="placeholder" style="color:var(--text)">
+        <b>${el[2]}</b> seleccionado — Número atómico: ${el[0]} · Electronegatividad: ${el[3]??'N/D'} · Valencia: ${el[4]>0?'+':''}${el[4]}<br>
+        <span style="color:var(--muted);font-size:.82rem;margin-top:6px;display:block">Ahora elige el segundo elemento entre los que se iluminan para generar el compuesto</span>
+      </div>`;
+    highlightEN(el);
+  } else {
+    if (selEN[0][0] === el[0]) return;
+    selEN.push(el);
+    card.classList.add('active');
+    processEN();
+  }
+}
+
+function highlightEN(first) {
+  ELEM.forEach(e => {
+    const card = document.getElementById(`en-${e[0]}`);
+    if (!card || e[0]===first[0] || e[7]==='NG') return;
+    const incompat = (first[7]==='M'||first[7]==='TM'||first[7]==='LA'||first[7]==='AC')
+                  && (e[7]==='M'||e[7]==='TM'||e[7]==='LA'||e[7]==='AC');
+    card.classList.add(incompat ? 'incompat' : 'compat');
+  });
+}
+
+function processEN() {
+  const [a, b] = selEN;
+  const enA = a[3]??1.5, enB = b[3]??1.5;
+  let cation = enA < enB ? a : b;
+  let anion  = enA < enB ? b : a;
+
+  if (a[0]===b[0]) {
+    document.getElementById('res-en').innerHTML = `
+      <div class="badge">Molécula Diatómica Homonuclear</div>
+      <div class="nombre-comp">${a[2]} molecular</div>
+      <div class="formula-big">${a[1]}<sub>2</sub></div>
+      <div class="card-exp">
+        <div class="bloque">
+          <div class="btitulo">Naturaleza del enlace y estructura molecular</div>
+          <p class="bp">Ambos átomos son idénticos, por lo que la electronegatividad es exactamente igual en los dos núcleos. Los electrones de enlace se distribuyen simétricamente entre ambos átomos, dando lugar a un <b>enlace covalente apolar puro</b>. No existe dipolo eléctrico neto.</p>
+          <p class="bp">Este tipo de molécula es característica de los no-metales más estables en condiciones normales: H₂, N₂, O₂, F₂, Cl₂, Br₂ e I₂. La energía de disociación del enlace determina su reactividad química frente a otros elementos.</p>
+        </div>
+        <div class="bloque" id="ai-en">${loadingHTML('Consultando propiedades, usos industriales y datos de mercado…')}</div>
+      </div>`;
+    fetchAndRender(`${a[1]}2`, `${a[2]} molecular (${a[1]}₂)`, 'ai-en', false);
+    return;
+  }
+
+  const valC = Math.abs(cation[4]), valA = Math.abs(anion[4]);
+  if (!valC || !valA) {
+    document.getElementById('res-en').innerHTML = `
+      <div class="placeholder">
+        ⚠ Este par de elementos no genera un compuesto binario clásico estable bajo las reglas de cruce de valencias estándar. Considera combinaciones con elementos de valencia bien definida.
+      </div>`;
+    return;
+  }
+  const d = mcd(valC, valA);
+  const subC = valA/d, subA = valC/d;
+  const diffEN = Math.abs(enA - enB).toFixed(2);
+  const dEN = parseFloat(diffEN);
+  const tipoEnlace = dEN >= 1.7 ? "Iónico" : (dEN >= 0.4 ? "Covalente Polar" : "Covalente No Polar");
+  const nombreAnion = NOMBRES_ANION[anion[1]] || anion[2];
+  const nombreFinal = `${nombreAnion} de ${cation[2]}`;
+  const formulaRaw = `${cation[1]}${subC>1?subC:''}${anion[1]}${subA>1?subA:''}`;
+  const formulaHTML = `${cation[1]}${subC>1?`<sub>${subC}</sub>`:''}${anion[1]}${subA>1?`<sub>${subA}</sub>`:''}`;
+  const cargaCat = Math.abs(cation[4]);
+  const balance = (subC*cargaCat)+(subA*anion[4]);
+
+  document.getElementById('res-en').innerHTML = `
+    <div class="badge">Compuesto Binario · Síntesis por Electronegatividad</div>
+    <div class="nombre-comp">${nombreFinal}</div>
+    <div class="formula-big">${formulaHTML}</div>
+    <div class="card-exp">
+      <div class="bloque">
+        <div class="btitulo">Electronegatividades y tipo de enlace</div>
+        <p class="bp">
+          <span class="nel">${cation[2]}</span> posee una electronegatividad de <b>${cation[3]??'N/D'}</b> en la escala de Pauling, siendo el componente de menor atracción electrónica. Al encontrarse con un átomo más electronegativo, cede sus electrones de valencia y adopta estado de catión (carga positiva).
+        </p>
+        <p class="bp">
+          <span class="nel">${anion[2]}</span> posee una electronegatividad de <b>${anion[3]??'N/D'}</b>, superior a la del catión. Atrae los electrones cedidos adoptando estado de anión (carga negativa). La diferencia entre ambas electronegatividades es <b>|${cation[3]??'?'} − ${anion[3]??'?'}| = ${diffEN}</b>, lo que clasifica el enlace como <b>${tipoEnlace}</b>.
+        </p>
+        <div class="data-row">
+          <div class="data-chip">ΔEN <span>${diffEN}</span></div>
+          <div class="data-chip">Enlace <span>${tipoEnlace}</span></div>
+          <div class="data-chip">Catión <span>${cation[1]}${cation[4]>0?'+'+cation[4]:cation[4]}</span></div>
+          <div class="data-chip">Anión <span>${anion[1]}${anion[4]}</span></div>
+        </div>
+      </div>
+      <div class="bloque">
+        <div class="btitulo">Fórmula empírica y balance estequiométrico</div>
+        <p class="bp">
+          Aplicando la <b>regla de cruce de valencias</b>, el valor absoluto de la carga del catión se convierte en subíndice del anión y viceversa, simplificando por el máximo común divisor cuando corresponde.
+        </p>
+        <p class="bp">
+          Resultado: <span class="fm">${subC}</span> átomo(s) de <span class="nel">${cation[2]}</span> combinados con <span class="fm">${subA}</span> átomo(s) de <span class="nel">${anion[2]}</span>.
+        </p>
+        <p class="bp">
+          <b>Verificación de neutralidad eléctrica:</b> (${subC} × +${cargaCat}) + (${subA} × ${anion[4]}) = <b>${balance}</b> — La molécula es eléctricamente neutra ✓
+        </p>
+      </div>
+      <div class="bloque" id="ai-en">${loadingHTML('Consultando propiedades fisicoquímicas, aplicaciones tecnológicas y valor en mercado…')}</div>
+    </div>`;
+
+  fetchAndRender(formulaRaw, nombreFinal, 'ai-en', false);
+}
+
+async function fetchAndRender(formula, nombre, targetId, isVl) {
+  const prompt = `Eres un profesor de química avanzado. Para el compuesto químico ${nombre} (${formula}) proporciona en español y en texto plano (sin markdown, sin asteriscos, sin guiones al inicio de línea):
+1. PROPIEDADES FÍSICAS: punto de fusión, color, estado a 25°C, densidad.
+2. PROPIEDADES QUÍMICAS: reactividad, solubilidad, estabilidad.
+3. UTILIDAD TECNOLÓGICA: 3 aplicaciones clave en tecnología moderna.
+4. PRODUCCIÓN MUNDIAL: cantidad anual estimada en toneladas métricas.
+5. PAÍSES PRODUCTORES: los 3 principales.
+6. VALOR EN MERCADO: precio aproximado por tonelada o unidad estándar.
+Máximo 4 líneas por sección. Lenguaje técnico-académico conciso.`;
+  try {
+    const txt = await callClaude(prompt);
+    const target = document.getElementById(targetId);
+    if (target) target.innerHTML = `
+      <div class="${isVl?'btitulo-vl':'btitulo'}">📊 Propiedades · Tecnología · Production · Mercado Global</div>
+      <div class="info-ai bp" style="white-space:pre-wrap;line-height:1.9">${escHtml(txt)}</div>`;
+  } catch(e) {
+    const t = document.getElementById(targetId);
+    if (t) t.innerHTML = errorHTML(`No se pudo cargar la información ampliada: ${e.message}`);
+  }
+}
+
+
+let selVL = [];
+function getValSign(e) {
+  if (e[7]==='NG' || e[4]===0) return 'zero';
+  return e[4] > 0 ? 'pos' : 'neg';
+}
+
+function clickVL(el) {
+  if (selVL.length >= 2) return;
+  if (getValSign(el) === 'zero') return;
+  if (selVL.length === 1 && selVL[0][0] === el[0]) return;
+  const card = document.getElementById(`vl-${el[0]}`);
+  if (selVL.length === 0) {
+    selVL.push(el);
+    card.classList.add('active-vl');
+    const sign = getValSign(el);
+    const signLabel = sign === 'pos'
+      ? `Valencia positiva (+${el[4]}) — actúa como catión (cede electrones)`
+      : `Valencia negativa (${el[4]}) — actúa como anión (capta electrones)`;
+    document.getElementById('res-vl').innerHTML = `
+      <div class="placeholder" style="color:var(--text)">
+        <b>${el[2]}</b> — ${signLabel}<br>
+        <span style="color:var(--muted);font-size:.82rem;margin-top:6px;display:block">
+          Se iluminarán los elementos cuya valencia tiene signo opuesto y pueden formar un compuesto binario estable con este elemento
+        </span>
+      </div>`;
+    highlightVL(el);
+  } else {
+    selVL.push(el);
+    card.classList.add('active-vl');
+    processVL();
+  }
+}
+
+function highlightVL(first) {
+  const firstSign = getValSign(first);
+  ELEM.forEach(e => {
+    const card = document.getElementById(`vl-${e[0]}`);
+    if (!card || e[0] === first[0]) return;
+    const eSign = getValSign(e);
+    card.classList.add(eSign === 'zero' || eSign === firstSign ? 'incompat' : 'compat-vl');
+  });
+}
+
+function processVL() {
+  const [a, b] = selVL;
+  let cation = a[4] > 0 ? a : b;
+  let anion  = a[4] < 0 ? a : b;
+
+  const valC = Math.abs(cation[4]);
+  const valA = Math.abs(anion[4]);
+  const d = mcd(valC, valA);
+  const subC = valA / d;
+  const subA = valC / d;
+
+  const enA = cation[3] ?? 1.5;
+  const enB = anion[3] ?? 2.5;
+  const diffEN = Math.abs(enA - enB).toFixed(2);
+  const dEN = parseFloat(diffEN);
+  let tipoEnlace, tipoClass, tipoDesc;
+  if (dEN >= 1.7) {
+    tipoEnlace = "Iónico"; tipoClass = "enlace-ionic";
+    tipoDesc = `El catión <b>${cation[2]}</b> transfiere sus ${cation[4]} electrón(es) de valencia al anión <b>${anion[2]}</b> de forma completa y definitiva. Se forma una red cristalina tridimensional mantenida por fuerzas electrostáticas de Coulomb. Estas estructuras presentan altos puntos de fusión, dureza moderada y conducción eléctrica exclusivamente en estado fundido o en solución acuosa.`;
+  } else if (dEN >= 0.4) {
+    tipoEnlace = "Covalente Polar"; tipoClass = "enlace-polar";
+    tipoDesc = `Los electrones se <b>comparten pero de forma asimétrica</b>: el átomo de mayor electronegatividad (<b>${anion[2]}</b>, EN = ${anion[3]??'N/D'}) concentra mayor densidad electrónica, generando un dipolo eléctrico permanente (δ⁻ en ${anion[2]}, δ⁺ en ${cation[2]}). Esta polaridad determina la solubilidad en agua y la reactividad química del compuesto.`;
+  } else {
+    tipoEnlace = "Covalente No Polar"; tipoClass = "enlace-cov";
+    tipoDesc = `Los electrones del enlace se distribuyen simétricamente entre ambos átomos. La diferencia de electronegatividad (${diffEN}) es insuficiente para generar una distribución asimétrica de carga. No existe dipolo neto; el compuesto es apolar y típicamente soluble en disolventes no polares.`;
+  }
+
+  const nombreAnion = NOMBRES_ANION[anion[1]] || anion[2];
+  const nombreFinal = `${nombreAnion} de ${cation[2]}`;
+  const formulaRaw = `${cation[1]}${subC>1?subC:''}${anion[1]}${subA>1?subA:''}`;
+  const formulaHTML = `${cation[1]}${subC>1?`<sub>${subC}</sub>`:''}${anion[1]}${subA>1?`<sub>${subA}</sub>`:''}`;
+  const balance = (subC * cation[4]) + (subA * anion[4]);
+
+  document.getElementById('res-vl').innerHTML = `
+    <div style="text-align:center">
+      <span class="badge-vl">Compuesto Binario · Unión por Valencia Opuesta</span>
+      <div class="nombre-comp">${nombreFinal}</div>
+      <div class="formula-big-vl">${formulaHTML}</div>
+      <span class="enlace-tag ${tipoClass}">Enlace ${tipoEnlace}</span>
+    </div>
+    <div class="card-exp-vl">
+      <div class="bloque">
+        <div class="btitulo-vl">🔗 Identificación y análisis de valencias opuestas</div>
+        <p class="bp">
+          La <b>valencia</b> de un elemento indica el número de electrones que puede ceder, captar o compartir para alcanzar configuración electrónica estable. Cuando dos elementos presentan valencias de signo opuesto, sus electrones deficitarios y excedentes se complementan mutuamente, permitiendo la formación de un compuesto binario estable.
+        </p>
+        <p class="bp">
+          <span class="nel-vl">${cation[2]}</span> posee valencia <b>+${cation[4]}</b>: tiende a ceder ${cation[4]} electrón(es) para estabilizarse, comportándose como <b>catión</b>.
+          <span class="nel-vl">${anion[2]}</span> posee valencia <b>${anion[4]}</b>: necesita captar ${Math.abs(anion[4])} electrón(es), comportándose como <b>anión</b>.
+        </p>
+        <p class="bp">
+          Aplicando el <b>método de cruce de valencias</b>: el valor absoluto de la valencia del catión (+${cation[4]}) pasa como subíndice al anión, y viceversa; simplificando por el MCD (${d}) se obtiene la fórmula mínima.
+        </p>
+        <div class="data-row">
+          <div class="data-chip">Catión <span>${cation[1]}${cation[4]>0?'+'+cation[4]:''}</span></div>
+          <div class="data-chip">Anión <span>${anion[1]}${anion[4]}</span></div>
+          <div class="data-chip">Proporción <span>${subC}:${subA}</span></div>
+          <div class="data-chip">Balance <span>${balance === 0 ? '0 ✓' : balance}</span></div>
+        </div>
+      </div>
+      <div class="bloque">
+        <div class="btitulo-vl">⚛ Tipo de enlace químico formado</div>
+        <p class="bp"><b>Diferencia de electronegatividades:</b> |${enA} − ${enB}| = <b>${diffEN}</b> en la escala de Pauling.</p>
+        <p class="bp">${tipoDesc}</p>
+        <div class="data-row">
+          <div class="data-chip">EN ${cation[2]} <span>${cation[3]??'N/D'}</span></div>
+          <div class="data-chip">EN ${anion[2]} <span>${anion[3]??'N/D'}</span></div>
+          <div class="data-chip">ΔEN <span>${diffEN}</span></div>
+          <div class="data-chip">Tipo <span>${tipoEnlace}</span></div>
+        </div>
+      </div>
+      <div class="bloque" id="ai-vl">${loadingHTML('Consultando propiedades del compuesto, usos tecnológicos y datos de producción global…', true)}</div>
+    </div>`;
+
+  fetchAndRenderVL(formulaRaw, nombreFinal, cation, anion, tipoEnlace, subC, subA);
+}
+
+async function fetchAndRenderVL(formula, nombre, cation, anion, tipoEnlace, subC, subA) {
+  const prompt = `Eres un profesor de química avanzado. Para el compuesto binario ${nombre} (fórmula: ${formula}) formado por el catión ${cation[2]} (valencia +${cation[4]}) y el anión ${anion[2]} (valencia ${anion[4]}), con enlace ${tipoEnlace}, proporciona EXCLUSIVAMENTE en español y en texto plano (sin markdown, sin asteriscos, sin guiones) los siguientes 6 apartados numerados:
+
+1. PROPIEDADES FÍSICAS: estado de agregación a 25°C, color, punto de fusión y ebullición, densidad.
+2. PROPIEDADES QUÍMICAS: reactividad con agua y ácidos, solubilidad, estabilidad térmica, comportamiento oxidante/reductor.
+3. UTILIDAD EN TECNOLOGÍA Y DESARROLLO TECNOLÓGICO: describe 3 aplicaciones concretas en tecnología moderna, industria o ciencia aplicada.
+4. PRODUCCIÓN MUNDIAL: cantidad estimada producida anualmente en toneladas métricas o kg según corresponda.
+5. PAÍSES PRODUCTORES: los 3 principales países productores o exportadores a nivel mundial.
+6. VALOR EN MERCADO: precio aproximado por tonelada métrica o unidad comercial estándar.
+
+Máximo 4 líneas por apartado. Lenguaje técnico-académico conciso.`;
+  try {
+    const txt = await callClaude(prompt);
+    const target = document.getElementById('ai-vl');
+    if (target) target.innerHTML = `
+      <div class="btitulo-vl">📊 Propiedades · Tecnología · Producción · Mercado Global</div>
+      <div class="info-ai bp" style="white-space:pre-wrap;line-height:1.9">${escHtml(txt)}</div>`;
+  } catch(e) {
+    const t = document.getElementById('ai-vl');
+    if (t) t.innerHTML = errorHTML(`No se pudo cargar la información ampliada: ${e.message}`);
+  }
+}
+
+
+let selRX = [];
+function clickRX(el) {
+  if (selRX.length >= 2) return;
+  if (el[6] === null) return;
+  if (selRX.length === 1 && selRX[0][0] === el[0]) return;
+  const card = document.getElementById(`rx-${el[0]}`);
+  if (selRX.length === 0) {
+    selRX.push(el);
+    card.classList.add('active');
+    document.getElementById('res-rx').innerHTML = `
+      <div class="placeholder" style="color:var(--text)">
+        <b>${el[2]}</b> seleccionado — Potencial estándar de reducción: E° = ${el[6]>=0?'+':''}${el[6]?.toFixed(2)} V<br>
+        <span style="color:var(--muted);font-size:.82rem;margin-top:6px;display:block">
+          Selecciona el segundo elemento entre los iluminados para calcular la celda galvánica y su potencial electromotriz
+        </span>
+      </div>`;
+    highlightRX(el);
+  } else {
+    selRX.push(el);
+    card.classList.add('active');
+    processRX();
+  }
+}
+
+function highlightRX(first) {
+  ELEM.forEach(e => {
+    const card = document.getElementById(`rx-${e[0]}`);
+    if (!card || e[0]===first[0]) return;
+    card.classList.add(e[6] === null ? 'incompat' : 'compat');
+  });
+}
+
+function processRX() {
+  const [a, b] = selRX;
+  const cat = a[6]>b[6]?a:b, ano = a[6]>b[6]?b:a;
+  const dE  = (cat[6]-ano[6]).toFixed(2);
+  const ne  = (ano[5]*cat[5])/mcd(ano[5],cat[5]);
+  const sA  = ne/ano[5]===1?'':ne/ano[5];
+  const sC  = ne/cat[5]===1?'':ne/cat[5];
+  const dG  = (-(ne*parseFloat(dE)*96485)/1000).toFixed(1);
+  const ec  = `${sA}${ano[1]}⁰ + ${sC}${cat[1]}${sup(cat[5])}⁺ → ${sA}${ano[1]}${sup(ano[5])}⁺ + ${sC}${cat[1]}⁰`;
+  const ox  = `${sA}${ano[1]}⁰ → ${sA}${ano[1]}${sup(ano[5])}⁺ + ${ne}e⁻`;
+  const red = `${sC}${cat[1]}${sup(cat[5])}⁺ + ${ne}e⁻ → ${sC}${cat[1]}⁰`;
+  const iup = `${ano[1]}⁰ | ${ano[1]}${sup(ano[5])}⁺ ‖ ${cat[1]}${sup(cat[5])}⁺ | ${cat[1]}⁰`;
+  const espontanea = parseFloat(dG) < 0;
+
+  document.getElementById('res-rx').innerHTML = `
+    <div style="text-align:center;margin-bottom:20px">
+      <div class="badge">Celda Galvánica · Reacción Redox</div>
+      <div class="nombre-comp">Ánodo: ${ano[2]} &nbsp;|&nbsp; Cátodo: ${cat[2]}</div>
+      <div class="iupac-label">Notación de celda (convención IUPAC):</div>
+      <div class="iupac-box">${iup}</div>
+      <div class="ecua">${ec}</div>
+      <div class="delta-e">ΔE°celda = +${dE} V</div>
+    </div>
+    <div class="card-exp">
+      <div class="bloque">
+        <div class="btitulo">Fundamento redox: oxidación y reducción simultáneas</div>
+        <p class="bp">
+          En una reacción redox, la oxidación y la reducción ocurren de manera simultánea. El elemento con <b>menor potencial de reducción estándar</b> se oxida espontáneamente, cediendo electrones al circuito externo; el de mayor potencial los capta al reducirse.
+        </p>
+        <p class="bp">
+          <span class="nel">${ano[2]}</span> (E° = ${ano[6]>=0?'+':''}${ano[6].toFixed(2)} V) se <b>oxida</b> en el <b>ánodo</b>: pierde ${ne} electrón(es) y adopta estado de oxidación +${ano[5]}. Actúa como <b>agente reductor</b> — su tendencia espontánea a ceder electrones impulsa la corriente.
+        </p>
+        <p class="bp">
+          <span class="nel">${cat[2]}</span> (E° = ${cat[6]>=0?'+':''}${cat[6].toFixed(2)} V) se <b>reduce</b> en el <b>cátodo</b>: gana ${ne} electrón(es) y regresa a estado metálico neutro. Actúa como <b>agente oxidante</b> — su elevada afinidad electrónica es la fuerza motriz de la reducción.
+        </p>
+        <div class="data-row">
+          <div class="data-chip">E°ánodo <span>${ano[6]>=0?'+':''}${ano[6].toFixed(2)} V</span></div>
+          <div class="data-chip">E°cátodo <span>${cat[6]>=0?'+':''}${cat[6].toFixed(2)} V</span></div>
+          <div class="data-chip">ΔE°celda <span>+${dE} V</span></div>
+          <div class="data-chip">e⁻ transferidos <span>${ne}</span></div>
+        </div>
+      </div>
+      <div class="bloque">
+        <div class="btitulo">Semirreacciones balanceadas</div>
+        <p class="bp">Cada semirreacción se balancea de forma independiente para igualar la transferencia electrónica total. El MCD de las valencias (${ano[5]} y ${cat[5]}) determina los coeficientes estequiométricos.</p>
+        <p class="bp"><b>Oxidación (ánodo):</b> <span class="fm">${ox}</span></p>
+        <p class="bp"><b>Reducción (cátodo):</b> <span class="fm">${red}</span></p>
+        <p class="bp"><b>Ecuación global:</b> <span class="fm">${ec}</span></p>
+      </div>
+      <div class="bloque">
+        <div class="btitulo">Termodinámica y espontaneidad de la reacción</div>
+        <p class="bp">
+          La <b>energía de Gibbs</b> (ΔG°) determina si la reacción ocurre de forma espontánea. Se calcula como: ΔG° = −n·F·ΔE°, donde n = ${ne} (electrones transferidos) y F = 96,485 C/mol (constante de Faraday).
+        </p>
+        <p class="bp">
+          Resultado: <span class="fm">ΔG° = ${dG} kJ/mol</span> — valor <b>${espontanea?'negativo: la reacción es termodinámicamente espontánea. La celda genera energía eléctrica de forma autónoma (celda galvánica).':'positivo: la reacción no es espontánea. Requiere aporte de energía externa, lo que corresponde a un proceso de electrólisis.'}</b>
+        </p>
+      </div>
+      <div class="bloque" id="ai-rx">${loadingHTML('Consultando clasificación de la celda, aplicaciones industriales y relevancia tecnológica…')}</div>
+    </div>`;
+
+  fetchAndRenderRX(ano, cat, dE, dG, ne);
+}
+
+async function fetchAndRenderRX(ano, cat, dE, dG, ne) {
+  const prompt = `Eres un profesor de electroquímica avanzada. Para la celda galvánica entre ${ano[2]} (ánodo, E°=${ano[6]}V) y ${cat[2]} (cátodo, E°=${cat[6]}V) con ΔE°=+${dE}V y ΔG°=${dG} kJ/mol, proporciona en español y texto plano (sin markdown, sin asteriscos):
+1. TIPO DE CELDA Y CLASIFICACIÓN: si es galvánica primaria, secundaria, o se usa en electrólisis.
+2. APLICACIONES INDUSTRIALES: 2-3 usos reales de esta combinación o similares.
+3. RELEVANCIA TECNOLÓGICA: uso en baterías, sensores, refinamiento de metales u otro.
+4. PRODUCCIÓN Y MERCADO: escala de producción industrial si aplica.
+Máximo 5 líneas por sección. Lenguaje técnico-académico. Sin viñetas ni asteriscos.`;
+  try {
+    const txt = await callClaude(prompt);
+    const target = document.getElementById('ai-rx');
+    if (target) target.innerHTML = `
+      <div class="btitulo">Clasificación, Aplicaciones y Relevancia Industrial</div>
+      <div class="info-ai bp" style="white-space:pre-wrap;line-height:1.9">${escHtml(txt)}</div>`;
+  } catch(e) {
+    const t = document.getElementById('ai-rx');
+    if (t) t.innerHTML = errorHTML(`No se pudo cargar el análisis ampliado: ${e.message}`);
+  }
+}
+
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(`tab-${id}`).classList.add('active');
+  btn.classList.add('active');
+}
+
+function resetTab(id) {
+  if (id==='en') {
+    selEN=[];
+    ELEM.forEach(e=>{ const c=document.getElementById(`en-${e[0]}`); if(c) c.className=`el ${e[7]}`; });
+    document.getElementById('res-en').innerHTML='<div class="placeholder">🔬 Selecciona un elemento para iniciar el análisis de combinaciones</div>';
+  } else if (id==='vl') {
+    selVL=[];
+    ELEM.forEach(e=>{ const c=document.getElementById(`vl-${e[0]}`); if(c) c.className=`el ${e[7]}`; });
+    document.getElementById('res-vl').innerHTML='<div class="placeholder">🔗 Selecciona un elemento para identificar sus posibles uniones por valencia opuesta</div>';
+  } else {
+    selRX=[];
+    ELEM.forEach(e=>{ const c=document.getElementById(`rx-${e[0]}`); if(c) c.className=`el ${e[7]}`; });
+    document.getElementById('res-rx').innerHTML='<div class="placeholder">🔋 Selecciona un elemento para analizar su comportamiento redox y celda galvánica</div>';
+  }
+}
+
+buildGrid('en');
+buildGrid('vl');
+buildGrid('rx');
+</script>
+</body>
+</html>
